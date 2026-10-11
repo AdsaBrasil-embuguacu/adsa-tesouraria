@@ -1,0 +1,75 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Verificar e-mail — ADSA</title>
+</head>
+<body>
+  <h2>ADSA Brasil — Verificação de e-mail</h2>
+
+  <form id="form">
+    <input id="email" type="email"
+      placeholder="E-mail cadastrado" required>
+    <input id="senha" type="password"
+      placeholder="Senha do Firebase" required>
+    <button type="submit">Enviar verificação</button>
+  </form>
+
+  <p id="mensagem"></p>
+
+  <script type="module">
+    import { initializeApp } from
+      "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+
+    import {
+      getAuth,
+      signInWithEmailAndPassword,
+      sendEmailVerification,
+      signOut
+    } from
+      "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+
+    // Substitua pelos dados do seu projeto.
+    const firebaseConfig = {
+      apiKey: "AIzaSyCEiJ61IE1R_3LpYOvF6v_5mOSMQk7vgWk",
+      authDomain: "tesourariav1.firebaseapp.com",
+      projectId: "tesourariav1",
+      appId: "1:7151186058:web:cb1239d45b320a293b3d73"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    document.getElementById("form")
+      .addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const mensagem = document.getElementById("mensagem");
+        mensagem.textContent = "Aguarde...";
+
+        try {
+          const email = document.getElementById("email").value;
+          const senha = document.getElementById("senha").value;
+
+          const resultado = await signInWithEmailAndPassword(
+            auth, email, senha
+          );
+
+          if (resultado.user.emailVerified) {
+            mensagem.textContent = "Este e-mail já está verificado.";
+          } else {
+            await sendEmailVerification(resultado.user);
+            mensagem.textContent =
+              "E-mail enviado! Confira sua caixa de entrada.";
+          }
+
+          await signOut(auth);
+        } catch (erro) {
+          mensagem.textContent = "Erro: " + erro.code;
+        }
+      });
+  </script>
+</body>
+</html>
