@@ -1,0 +1,4 @@
+assets/config.js
+.env
+*.key
+*.pem
